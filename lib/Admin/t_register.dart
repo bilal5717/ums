@@ -1,8 +1,9 @@
 import 'dart:core';
-import 'package:ums/Admin/admin_dashboard.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:http/http.dart' as http;
+import 'package:ums/Admin/admin_dashboard.dart';
+
+import 'package:ums/api_connection/api_connect.dart';
 
 class TRegister extends StatefulWidget {
   @override
@@ -10,78 +11,70 @@ class TRegister extends StatefulWidget {
 }
 
 class _TRegisterState extends State<TRegister> {
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
-  late String FirstName, LastName, MiddleName,  Mobilnumber, AadharcardNumber,Experience,
-      Address, Pincode;
+  late String firstName, lastName, gender, middleName, mobileNumber, experience,
+      address, pincode;
 
-
-  getFirstName(fname) {
-    this.FirstName = fname;
-  }
-  getMiddleName(mname) {
-    this.MiddleName = mname;
-  }
-  getLastName(lname) {
-    this.LastName = lname;
-  }
-  getAddress(address) {
-    this.Address = address;
-  }
-  getPincode(pincode) {
-    this.Pincode = pincode;
-  }
-  getMobileNumber(mno) {
-    this.Mobilnumber = mno;
-  }
-  getAadharcardNumber(ano) {
-    this.AadharcardNumber = ano;
-  }
-  getExperience(exp) {
-    this.Experience = exp;
+  getFirstName(String fname) {
+    this.firstName = fname;
   }
 
-  createData() {
-    DocumentReference documentReference =
-    FirebaseFirestore.instance.collection("Information").doc(FirstName);
-    Map<String, dynamic> Information = {
-      'FirstName': FirstName,
-      'MiddleName': MiddleName,
-      'LastName': LastName,
-      'Address': Address,
-      'Pincode': Pincode,
-      'MobilNumber':Mobilnumber,
-      'AadharcardNumber':AadharcardNumber,
-      'Experience': Experience
+  getMiddleName(String mname) {
+    this.middleName = mname;
+  }
 
-    };
-    documentReference.set(Information).whenComplete(() {
-      print('$FirstName created');
+  getLastName(String lname) {
+    this.lastName = lname;
+  }
+
+  getAddress(String addr) {
+    this.address = addr;
+  }
+
+  getPincode(String pin) {
+    this.pincode = pin;
+  }
+
+  getMobileNumber(String mno) {
+    this.mobileNumber = mno;
+  }
+
+  getGender(String gen) {
+    this.gender = gen;
+  }
+
+  getExperience(String exp) {
+    this.experience = exp;
+  }
+
+  createData() async {
+    var url = Uri.parse(API.register_teacher);
+    var response = await http.post(url, body: {
+      'first_name': firstName,
+      'middle_name': middleName,
+      'last_name': lastName,
+      'address': address,
+      'gender': gender,
+      'pincode': pincode,
+      'mobile_number': mobileNumber,
+      'experience': experience,
     });
+
+    if (response.statusCode == 200) {
+      print('Teacher created successfully');
+      // Optionally, you can handle further actions here
+    } else {
+      print('Failed to create teacher: ${response.body}');
+    }
   }
 
   updateData() {
-    DocumentReference documentReference =
-    FirebaseFirestore.instance.collection("Information").doc(FirstName);
-    Map<String, dynamic> Information = {
-      'FirstName': FirstName,
-      'MiddleName': MiddleName,
-      'LastName': LastName,
-      'Address': Address,
-      'Pincode': Pincode,
-      'MobilNumber':Mobilnumber,
-      'AadharcardNumber':AadharcardNumber,
-      'Experience': Experience
-    };
-    documentReference.set(Information).whenComplete(() {
-      print('$FirstName updated');
-    });
+    print('$firstName updated');
+    // Implement update functionality if needed
   }
 
   deleteData() {
-    DocumentReference documentReference =
-    FirebaseFirestore.instance.collection("Information").doc(FirstName);
-
-    documentReference.delete().whenComplete(() => print('$FirstName deleted'));
+    print('$firstName deleted');
+    // Implement delete functionality if needed
   }
 
   @override
@@ -92,11 +85,14 @@ class _TRegisterState extends State<TRegister> {
         child: AppBar(
           leading: InkWell(
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) {
+             /* Navigator.push(context, MaterialPageRoute(builder: (_) {
                 return AdminZone();
-              }));
+              }));*/
             },
-            child: Icon(Icons.arrow_back, size: 50,),
+            child: Icon(
+              Icons.arrow_back,
+              size: 50,
+            ),
           ),
           backgroundColor: Color(0xFF4BE0DB),
           centerTitle: true,
@@ -113,156 +109,121 @@ class _TRegisterState extends State<TRegister> {
               padding: const EdgeInsets.all(8.0),
               child: TextFormField(
                 decoration: InputDecoration(
-                    labelText: 'First Name',
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                        borderSide:
-                        BorderSide(color: Colors.tealAccent, width: 2.0))),
-                onChanged: (fname) {
-                  getFirstName(fname);
-                },
+                  labelText: 'First Name',
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.tealAccent, width: 2.0)),
+                ),
+                onChanged: getFirstName,
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextFormField(
                 decoration: InputDecoration(
-                    labelText: 'Middle Name',
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                        borderSide:
-                        BorderSide(color: Colors.tealAccent, width: 2.0))),
-                onChanged: (mname) {
-                  getFirstName(mname);
-                },
+                  labelText: 'Middle Name',
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.tealAccent, width: 2.0)),
+                ),
+                onChanged: getMiddleName,
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextFormField(
                 decoration: InputDecoration(
-                    labelText: 'Last Name',
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                        borderSide:
-                        BorderSide(color: Colors.tealAccent, width: 2.0))),
-                onChanged: (lname) {
-                  getLastName(lname);
-                },
+                  labelText: 'Last Name',
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.tealAccent, width: 2.0)),
+                ),
+                onChanged: getLastName,
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextFormField(
                 decoration: InputDecoration(
-                    labelText: 'Address',
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                        borderSide:
-                        BorderSide(color: Colors.tealAccent, width: 2.0))),
-                onChanged: (address) {
-                  getLastName(address);
-                },
+                  labelText: 'Address',
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.tealAccent, width: 2.0)),
+                ),
+                onChanged: getAddress,
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextFormField(
                 decoration: InputDecoration(
-                    labelText: 'Pincode',
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                        borderSide:
-                        BorderSide(color: Colors.tealAccent, width: 2.0))),
-                onChanged: (pincode) {
-                  getPincode(pincode);
-                },
+                  labelText: 'Pincode',
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.tealAccent, width: 2.0)),
+                ),
+                onChanged: getPincode,
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextFormField(
                 decoration: InputDecoration(
-                    labelText: 'Mobile Number',
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                        borderSide:
-                        BorderSide(color: Colors.tealAccent, width: 2.0))),
-                onChanged: (mno) {
-                  getLastName(mno);
-                },
+                  labelText: 'Mobile Number',
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.tealAccent, width: 2.0)),
+                ),
+                onChanged: getMobileNumber,
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextFormField(
                 decoration: InputDecoration(
-                    labelText: 'Aadharcard Number',
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                        borderSide:
-                        BorderSide(color: Colors.tealAccent, width: 2.0))),
-                onChanged: (ano) {
-                  getLastName(ano);
-                },
+                  labelText: 'Gender',
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.tealAccent, width: 2.0)),
+                ),
+                onChanged: getGender,
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextFormField(
                 decoration: InputDecoration(
-                    labelText: 'Experience of Years',
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                        borderSide:
-                        BorderSide(color: Colors.tealAccent, width: 2.0))),
-                onChanged: (Experience) {
-                  getLastName(Experience);
-                },
+                  labelText: 'Experience',
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.tealAccent, width: 2.0)),
+                ),
+                onChanged: getExperience,
               ),
             ),
+
+            // Add other TextFormField widgets for other fields
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                TextButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor),
-                    onPressed: () {
-                      createData();
-                    },
-                    child: Text(
-                      'Create',
-                      style: TextStyle(color: Colors.white),
-                    )),
-                TextButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor),
-                    onPressed: () {
-                      updateData();
-                    },
-                    child: Text(
-                      'Update',
-                      style: TextStyle(color: Colors.white),
-                    )),
-                TextButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor),
-                    onPressed: () {
-                      deleteData();
-                    },
-                    child: Text(
-                      'Delete',
-                      style: TextStyle(color: Colors.white),
-                    )),
+                ElevatedButton(
+                  onPressed: createData,
+                  child: Text('Create'),
+                ),
+                ElevatedButton(
+                  onPressed: updateData,
+                  child: Text('Update'),
+                ),
+                ElevatedButton(
+                  onPressed: deleteData,
+                  child: Text('Delete'),
+                ),
               ],
             ),
-            SizedBox(
-              height: 10,
-            ),
+            SizedBox(height: 10),
           ],
         ),
       ),
     );
   }
 }
-

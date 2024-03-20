@@ -18,9 +18,9 @@ class salary extends StatelessWidget{
           child: AppBar(
             leading: InkWell(
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) {
+               /* Navigator.push(context, MaterialPageRoute(builder: (_) {
                   return T_dashboard();
-                }));
+                }));*/
               },
               child: Icon(Icons.arrow_back, size: 30,),
             ),

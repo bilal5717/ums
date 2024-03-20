@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class ViewResultPage extends StatefulWidget {
   final String studentId;
@@ -14,23 +16,65 @@ class _ViewResultPageState extends State<ViewResultPage> {
   String _selectedSemester = '1st';
   List<Map<String, dynamic>> _resultList = [];
 
-  void _getResults() {
-    // Implement fetching results from the server
-    // For demonstration purposes, I'm using dummy data
-    setState(() {
-      _resultList = [
-        {'subject': 'DBMS', 'marks': 85},
-        {'subject': 'DBMS Lab', 'marks': 75},
-        {'subject': 'Mathematics', 'marks': 80},
-        {'subject': 'Programming', 'marks': 90},
-        {'subject': 'Programming Lab', 'marks': 85},
-        {'subject': 'English', 'marks': 88},
-        {'subject': 'Physics', 'marks': 78},
-        {'subject': 'Chemistry', 'marks': 82},
-        {'subject': 'Psychology', 'marks': 79},
-      ];
-    });
+  Future<void> _getResults() async {
+    try {
+      var url = Uri.parse('http://192.168.1.5/ums_api/admin/View_result.php?student_id=${widget.studentId}&semester=$_selectedSemester');
+      var response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        if (data is List) {
+          setState(() {
+            _resultList = List<Map<String, dynamic>>.from(data);
+          });
+        } else if (data is Map && data.containsKey('error')) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Error'),
+              content: Text(data['error']),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Error'),
+            content: Text('Failed to fetch results. Please try again later.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text('An error occurred. Please try again later.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
   }
+
+
 
   @override
   void initState() {

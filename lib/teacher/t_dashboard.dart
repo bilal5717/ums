@@ -7,9 +7,9 @@ import 'package:ums/Login/login.dart';
 
 
 class T_dashboard extends StatelessWidget {
-  T_dashboard({Key? key}) : super(key: key);
-  late double cgpa = 3.75;
+
   @override
+  T_dashboard();
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     const tableMinWidth = 800.0; // Adjust based on your content needs

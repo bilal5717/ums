@@ -1,77 +1,91 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-class ScheduledMeetingPage extends StatelessWidget {
+class MeetingForm extends StatefulWidget {
+  @override
+  _MeetingFormState createState() => _MeetingFormState();
+}
+
+class _MeetingFormState extends State<MeetingForm> {
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _semesterController = TextEditingController();
+  final TextEditingController _subjectController = TextEditingController();
+  final TextEditingController _startDateTimeController = TextEditingController();
+  final TextEditingController _endDateTimeController = TextEditingController();
+  final TextEditingController _linkController = TextEditingController();
+
+  Future<void> _submitForm() async {
+    final url = 'http:// 192.168.1.5/ums_api/teacher/held_meetings.php'; // Replace with your PHP script URL
+
+    final response = await http.post(
+      Uri.parse(url),
+      body: {
+        'title': _titleController.text,
+        'description': _descriptionController.text,
+        'semester': _semesterController.text,
+        'subject': _subjectController.text,
+        'startDateTime': _startDateTimeController.text,
+        'endDateTime': _endDateTimeController.text,
+        'link': _linkController.text,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      // Meeting details inserted successfully
+      print('Meeting details inserted successfully');
+    } else {
+      // Failed to insert meeting details
+      print('Failed to insert meeting details');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Scheduled Meeting'),
+        title: Text('Meeting Form'),
       ),
-      body: MeetingList(),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _titleController,
+              decoration: InputDecoration(labelText: 'Title'),
+            ),
+            TextField(
+              controller: _descriptionController,
+              decoration: InputDecoration(labelText: 'Description'),
+            ),
+            TextField(
+              controller: _semesterController,
+              decoration: InputDecoration(labelText: 'Semester'),
+            ),
+            TextField(
+              controller: _subjectController,
+              decoration: InputDecoration(labelText: 'Subject'),
+            ),
+            TextField(
+              controller: _startDateTimeController,
+              decoration: InputDecoration(labelText: 'Start Date Time'),
+            ),
+            TextField(
+              controller: _endDateTimeController,
+              decoration: InputDecoration(labelText: 'End Date Time'),
+            ),
+            TextField(
+              controller: _linkController,
+              decoration: InputDecoration(labelText: 'Meeting Link'),
+            ),
+            SizedBox(height: 20.0),
+            ElevatedButton(
+              onPressed: _submitForm,
+              child: Text('Submit'),
+            ),
+          ],
+        ),
+      ),
     );
   }
-}
-
-class MeetingList extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: meetings.length,
-      itemBuilder: (context, index) {
-        final meeting = meetings[index];
-        return ListTile(
-          title: Text(meeting.title),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(meeting.description),
-              Text('Starts at: ${meeting.startDateTime}'),
-              Text('Ends by: ${meeting.endDateTime}'),
-            ],
-          ),
-          trailing: ElevatedButton(
-            onPressed: () {
-              // Implement logic to join meeting
-            },
-            child: Text('Join'),
-          ),
-        );
-      },
-    );
-  }
-}
-
-// Replace this data with actual data fetched from the server
-List<Meeting> meetings = [
-  Meeting(
-    title: 'Meeting 1',
-    description: 'Description for meeting 1',
-    startDateTime: '2024-03-03 09:00:00',
-    endDateTime: '2024-03-03 10:00:00',
-    link: 'https://example.com/meeting1',
-  ),
-  Meeting(
-    title: 'Meeting 2',
-    description: 'Description for meeting 2',
-    startDateTime: '2024-03-04 10:00:00',
-    endDateTime: '2024-03-04 11:00:00',
-    link: 'https://example.com/meeting2',
-  ),
-  // Add more meetings as needed
-];
-
-class Meeting {
-  final String title;
-  final String description;
-  final String startDateTime;
-  final String endDateTime;
-  final String link;
-
-  Meeting({
-    required this.title,
-    required this.description,
-    required this.startDateTime,
-    required this.endDateTime,
-    required this.link,
-  });
 }

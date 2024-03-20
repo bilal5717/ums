@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class AddResultPage extends StatefulWidget {
   final String studentId;
@@ -15,15 +16,56 @@ class _AddResultPageState extends State<AddResultPage> {
   String _selectedSemester = '1st';
   TextEditingController _marksController = TextEditingController();
 
-  void _submitMarks() {
-    // Implement submitting marks functionality
+  Future<void> _submitMarks() async {
     String subject = _selectedSubject;
     String semester = _selectedSemester;
     String marks = _marksController.text;
 
-    // You can add validation here before submitting
+    // Validate marks
+    if (marks.isEmpty) {
+      _showErrorDialog('Marks cannot be empty.');
+      return;
+    }
 
-    // After validation, you can send the data to the server or perform any other action
+    // Send data to server
+    var url = Uri.parse('http://192.168.1.5/ums_api/admin/addResult.php'); // Replace with your PHP endpoint URL
+    try {
+      var response = await http.post(
+        url,
+        body: {
+          'student_id': widget.studentId,
+          'subject': subject,
+          'semester': semester,
+          'marks': marks,
+        },
+      );
+      if (response.statusCode == 200) {
+        var data = response.body;
+        // Handle response data as needed
+        print(data);
+      } else {
+        _showErrorDialog('Failed to add marks. Please try again later.');
+      }
+    } catch (e) {
+      print('Error: $e');
+      _showErrorDialog('An error occurred. Please try again later.');
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

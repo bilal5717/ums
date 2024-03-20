@@ -1,9 +1,28 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:ums/Admin/single_student_update.dart';
+import 'package:ums/api_connection/api_connect.dart';
+
+
 class StudentDetailsPage extends StatelessWidget {
   final String studentId;
 
   const StudentDetailsPage({Key? key, required this.studentId}) : super(key: key);
+
+  Future<Map<String, dynamic>> _fetchStudentDetails(String studentId) async {
+    final url = Uri.parse('http://192.168.1.5/ums_api/admin/view_student_data.php?st_id=$studentId');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to fetch student details');
+      }
+    } catch (error) {
+      throw Exception('Failed to fetch student details: $error');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,31 +50,21 @@ class StudentDetailsPage extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 10.0),
-                  CircleAvatar(
-                    radius: 90,
-                    backgroundColor: Colors.white,
-                    backgroundImage: studentDetails['img'] != null
-                        ? NetworkImage('http://your-domain.com/img/student/${studentDetails['img']}')
-                        : AssetImage('assets/default.png') as ImageProvider,
-                  ),
                   SizedBox(height: 20.0),
                   Table(
                     columnWidths: {0: FlexColumnWidth(1), 1: FlexColumnWidth(2)},
                     children: [
-                      _buildTableRow('Student ID:', studentDetails['st_id']),
-                      _buildTableRow('Name:', studentDetails['name']),
-                      _buildTableRow('E-mail:', studentDetails['email']),
-                      _buildTableRow('Birthday:', studentDetails['bday']),
-                      _buildTableRow('Program:', studentDetails['program']),
-                      _buildTableRow('Contact:', studentDetails['contact']),
-                      _buildTableRow('Gender:', studentDetails['gender']),
-                      _buildTableRow('Address:', studentDetails['address']),
+                      for (var detail in studentDetails.entries)
+                        if (detail.key != 'name')
+                          _buildTableRow(detail.key, detail.value.toString()),
                     ],
                   ),
                   SizedBox(height: 20.0),
                   ElevatedButton(
                     onPressed: () {
-                      // Navigate to student edit page
+                      Navigator.push(context, MaterialPageRoute(builder: (_) {
+                        return StudentUpdate(  studentId: studentDetails['id'],);
+                      }));
                     },
                     child: Text('Edit Profile'),
                   ),
@@ -73,27 +82,6 @@ class StudentDetailsPage extends StatelessWidget {
         },
       ),
     );
-  }
-
-  Future<Map<String, dynamic>> _fetchStudentDetails(String studentId) async {
-    // Replace with your API call to fetch student details by ID
-    // Example:
-    // final response = await http.get('http://your-domain.com/get_student_details.php?id=$studentId');
-    // final jsonData = json.decode(response.body);
-    // return jsonData;
-
-    // For demonstration purposes, returning dummy data
-    return {
-      'name': 'John Doe',
-      'img': null,
-      'st_id': '123456',
-      'email': 'john@example.com',
-      'bday': '1990-01-01',
-      'program': 'Computer Science',
-      'contact': '1234567890',
-      'gender': 'Male',
-      'address': '123 Main St, City'
-    };
   }
 
   TableRow _buildTableRow(String label, String value) {

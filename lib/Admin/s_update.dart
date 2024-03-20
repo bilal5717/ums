@@ -1,76 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:ums/Admin/s_update.dart';
-import 'package:ums/Admin/t_register.dart';
-import 'package:ums/Login/login.dart';
-
-import 'change_password_admin.dart';
-
-class AdminZone extends StatefulWidget {
-  final String email ;
-
-  const AdminZone({required this.email});
+import 'all_student_details.dart';
+import 'package:ums/Admin/admin_dashboard.dart';
+import 'package:ums/Admin/st_result.dart';
+import 'package:ums/Admin/s_register.dart';
+class Sregister extends StatefulWidget {
   @override
   _AdminZoneState createState() => _AdminZoneState();
 }
 
-class _AdminZoneState extends State<AdminZone> {
-
+class _AdminZoneState extends State<Sregister> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50),
         child: AppBar(
-          title: Text('UMS'),
-          actions: [
-            PopupMenuButton(
-              itemBuilder: (BuildContext context) => [
-                PopupMenuItem(
-                  child: ListTile(
-                    leading: Icon(Icons.person),
-                    title: Text('Profile'),
-                    onTap: () {
-                     /* Navigator.push(context, MaterialPageRoute(builder: (_) {
-                        return ProfilePage();
-                      }));*/
-                    },
-                  ),
-                ),
-                PopupMenuItem(
-                  child: ListTile(
-                    leading: Icon(Icons.lock),
-                    title: Text('Password'),
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) {
-                        return ChangePasswordAdmin(email:widget.email);
-                      }));
-                    },
-                  ),
-                ),
-                PopupMenuItem(
-                  child: ListTile(
-                    leading: Icon(Icons.info),
-                    title: Text('Help'),
-                    onTap: () {
-                      // Handle help tap
-                    },
-                  ),
-                ),
-                PopupMenuItem(
-                  child: ListTile(
-                    leading: Icon(Icons.logout),
-                    title: Text('Logout'),
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) {
-                        return LoginPage();
-                      }));
-                    },
-                  ),
-                ),
-              ],
-              icon: Icon(Icons.account_circle),
-            ),
-          ],
+          leading: InkWell(
+            onTap: () {
+               Navigator.pop(context);
+            },
+            child: Icon(Icons.arrow_back, size: 30,),
+          ),
+          backgroundColor: Color(0xFF4BE0DB),
+          centerTitle: true,
+          title: Text(
+            'Student Management',
+            style: TextStyle(fontSize: 20),
+          ),
         ),
       ),
       body: Column(
@@ -93,7 +49,7 @@ class _AdminZoneState extends State<AdminZone> {
                     InkWell(
                       onTap: () {
                         Navigator.push(context, MaterialPageRoute(builder: (_) {
-                          return Sregister();
+                          return StudentRegister();
                         }));
                       },
                       child: Column(
@@ -119,7 +75,7 @@ class _AdminZoneState extends State<AdminZone> {
 
                           Container(
                             child: Text(
-                              'Students',
+                              'Register new student',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20.0,
@@ -133,7 +89,47 @@ class _AdminZoneState extends State<AdminZone> {
                     InkWell(
                       onTap: () {
                         Navigator.push(context, MaterialPageRoute(builder: (_) {
-                          return TRegister();
+                          return AllStudentDetails();
+                        }));
+                      },
+                      child: Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
+
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black54,
+                                  blurRadius: 5.0,
+                                  spreadRadius: 2.0,
+                                ),
+                              ],
+                            ),
+                            child: Image.asset(
+                              "assets/sregister.png",
+                              width: 150,
+                              height: 150,
+                            ),
+                          ),
+
+                          Container(
+                            child: Text(
+                              'All Register Students',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20.0,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 14,),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) {
+                          return AllStudentResults();
                         }));
                       },
                       child: Column(
@@ -157,7 +153,7 @@ class _AdminZoneState extends State<AdminZone> {
                           ),
                           Container(
                             child: Text(
-                              'Teachers',
+                              'Results',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20.0,

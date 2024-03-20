@@ -46,7 +46,7 @@ class Sidebar extends StatelessWidget {
               ),
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (_) {
-                  return ScheduledMeetingPage();
+                  return MeetingForm();
                 }));
               },
             ),
