@@ -44,7 +44,7 @@ class _StudentDetailsPageState extends State<StudentRegister> {
       String password = passwordController.text;
 
       try {
-        String uri = 'http://192.168.1.5/ums_api/admin/registerStudent.php';
+        String uri = 'http://127.0.0.1/ums_api/admin/registerStudent.php';
         var request = http.MultipartRequest('POST', Uri.parse(uri));
         request.fields['st_id'] = s_id;
         request.fields['st_name'] = name;

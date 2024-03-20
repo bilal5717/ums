@@ -24,7 +24,7 @@ class _ChangePasswordAdminState extends State<ChangePasswordAdmin> {
       final confirmPassword = _confirmPasswordController.text;
 
       try {
-        var url = Uri.parse('http://192.168.1.5/ums_api/admin/change_password.php');
+        var url = Uri.parse('http://127.0.0.1/ums_api/admin/change_password.php');
         print(url);
         print(widget.email);
         var response = await http.post(

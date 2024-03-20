@@ -17,7 +17,7 @@ class _AllStudentDetailsState extends State<AllStudentResults> {
 
 
   Future<List<Map<String, dynamic>>> fetchStudents() async {
-    final url = Uri.parse('http://192.168.1.5/ums_api/admin/fetchAllStudents.php');
+    final url = Uri.parse('http://127.0.0.1/ums_api/admin/fetchAllStudents.php');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {

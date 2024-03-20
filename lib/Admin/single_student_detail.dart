@@ -11,7 +11,7 @@ class StudentDetailsPage extends StatelessWidget {
   const StudentDetailsPage({Key? key, required this.studentId}) : super(key: key);
 
   Future<Map<String, dynamic>> _fetchStudentDetails(String studentId) async {
-    final url = Uri.parse('http://192.168.1.5/ums_api/admin/view_student_data.php?st_id=$studentId');
+    final url = Uri.parse('http://127.0.0.1/ums_api/admin/view_student_data.php?st_id=$studentId');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {

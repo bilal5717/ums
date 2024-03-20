@@ -47,7 +47,7 @@ class _TRegisterState extends State<TRegister> {
   }
 
   createData() async {
-    var url = Uri.parse(API.register_teacher);
+    var url = Uri.parse("http:// 127.0.0.1/ums_api/admin/register_teacher.php");
     var response = await http.post(url, body: {
       'first_name': firstName,
       'middle_name': middleName,

@@ -37,10 +37,8 @@ class FileListPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => FileUploadPage(
-                      classCommittee: file.classCommittee,
-                      groupId: file.groupId,
-                      courseId: file.courseId,
+                    builder: (context) => AssignmentQuizUploader(
+
                     ),
                   ),
                 );

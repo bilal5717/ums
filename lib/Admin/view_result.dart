@@ -18,7 +18,7 @@ class _ViewResultPageState extends State<ViewResultPage> {
 
   Future<void> _getResults() async {
     try {
-      var url = Uri.parse('http://192.168.1.5/ums_api/admin/View_result.php?student_id=${widget.studentId}&semester=$_selectedSemester');
+      var url = Uri.parse('http://127.0.0.1/ums_api/admin/View_result.php?student_id=${widget.studentId}&semester=$_selectedSemester');
       var response = await http.get(url);
 
       if (response.statusCode == 200) {

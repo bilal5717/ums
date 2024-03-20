@@ -71,19 +71,19 @@ class Sidebar extends StatelessWidget {
               ),
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (_) {
-                  return AttendancePage();
+                  return StudentAttendance();
                 }));
               },
             ),
             ListTile(
               leading: Icon(Icons.book, color: Colors.white),
               title: Text(
-                'Upload Files',
+                'Assignment/quizes Upload',
                 style: TextStyle(color: Colors.white),
               ),
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (_) {
-                  return FileUploadPage(courseId: '', groupId: '', classCommittee: '',);
+                  return AssignmentQuizUploader();
                 }));
               },
             ),

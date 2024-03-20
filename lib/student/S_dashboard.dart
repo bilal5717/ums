@@ -1,13 +1,24 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:ums/components/side_menu.dart';
 import 'package:ums/Models/courses.dart';
 import 'package:ums/student/profile.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-// ignore: must_be_immutable
-class MainScreen extends StatelessWidget {
-  MainScreen({Key? key}) : super(key: key);
+class MainScreen extends StatefulWidget {
+  final String email;
 
+  MainScreen({Key? key, required this.email}) : super(key: key);
+
+  @override
+  _MainScreenState createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  late String studentName = ''; // Initialize with an empty string
+  late String studentId = '';
   final List<Course> courses = [
     Course(1, "CS101", "Introduction to Programming", "BSIT8", "Mr. Parwaiz", 0.90),
     Course(2, "MA102", "Discrete Mathematics", "BSIT8", "Ms. Jane", 0.95),
@@ -16,6 +27,30 @@ class MainScreen extends StatelessWidget {
   ];
 
   late double cgpa = 3.75;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchStudentInfo();
+  }
+
+  Future<void> fetchStudentInfo() async {
+    try {
+      final response = await http.get(Uri.parse('http://127.0.0.1/ums_api/student/fetch_profile_data.php?email=${widget.email}'));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          studentName = data['name'];
+          studentId = data['id'];
+        });
+      } else {
+        throw Exception('Failed to load student info');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,8 +77,8 @@ class MainScreen extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (_) {
-                return  StudentProfilePage(sid: 'F20-1612', sname: 'Hafiza Rabbaniya',);
-              }));
+                  return StudentProfilePage(sid: studentId, sname: studentName);
+                }));
               },
               child: const CircleAvatar(
                 backgroundImage: NetworkImage("https://images.unsplash.com/photo-1500522144261-ea64433bbe27?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NTh8fHdvbWVufGVufDB8MHwwfHw%3D&auto=format&fit=crop&w=500&q=60"),
@@ -52,7 +87,7 @@ class MainScreen extends StatelessWidget {
           ),
         ],
       ),
-      drawer: const SideMenu(),
+      drawer: SideMenu(name: studentName, sid: studentId),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
@@ -135,6 +170,8 @@ class MainScreen extends StatelessWidget {
           ),
         ),
       ),
+
+
     );
   }
 }

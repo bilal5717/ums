@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/widgets.dart';
-//import 'package:ums/Login/login.dart';
 import 'package:ums/Login/login.dart';
-
+//import 'package:ums/Login/login.dart';
+import 'package:ums/teacher/t_dashboard.dart';
+import 'package:ums/student/S_dashboard.dart';
 class SplashScreen extends StatefulWidget {
   @override
   _SplashScreenState createState() => _SplashScreenState();

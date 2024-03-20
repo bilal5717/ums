@@ -19,7 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
       try {
-        var url = Uri.parse('http://192.168.1.5/ums_api/authentication/login.php');
+        var url = Uri.parse('http://127.0.0.1/ums_api/authentication/login.php');
         var response = await http.post(url, body: {
           'email': email,
           'password': _password,
@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
             // Navigate to respective dashboard based on role
             switch (_selectedRole) {
               case UserRole.student:
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MainScreen()));
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MainScreen(email: email)));
                 break;
               case UserRole.admin:
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => AdminZone(email: email,)));

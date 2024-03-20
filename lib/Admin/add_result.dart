@@ -28,7 +28,7 @@ class _AddResultPageState extends State<AddResultPage> {
     }
 
     // Send data to server
-    var url = Uri.parse('http://192.168.1.5/ums_api/admin/addResult.php'); // Replace with your PHP endpoint URL
+    var url = Uri.parse('http://127.0.0.1/ums_api/admin/addResult.php'); // Replace with your PHP endpoint URL
     try {
       var response = await http.post(
         url,

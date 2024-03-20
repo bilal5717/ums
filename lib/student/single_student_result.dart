@@ -1,182 +1,151 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:ums/student/single_s_cgpa.dart';
-class StudentResultPage extends StatefulWidget {
-  final String stid;
-  final String name;
+import 'package:http/http.dart' as http;
 
-  const StudentResultPage({required this.stid, required this.name});
+class ViewResultPage extends StatefulWidget {
+  final String studentId;
+  final String studentName;
+
+  const ViewResultPage({required this.studentId, required this.studentName});
 
   @override
-  _StudentResultPageState createState() => _StudentResultPageState();
+  _ViewResultPageState createState() => _ViewResultPageState();
 }
 
-class _StudentResultPageState extends State<StudentResultPage> {
-  late String semester = '1st';
-  late List<Map<String, dynamic>> results = [];
+class _ViewResultPageState extends State<ViewResultPage> {
+  String _selectedSemester = '1st';
+  List<Map<String, dynamic>> _resultList = [];
+
+  Future<void> _getResults() async {
+    try {
+      var url = Uri.parse('http://127.0.0.1/ums_api/admin/View_result.php?student_id=${widget.studentId}&semester=$_selectedSemester');
+      var response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        if (data is List) {
+          setState(() {
+            _resultList = List<Map<String, dynamic>>.from(data);
+          });
+        } else if (data is Map && data.containsKey('error')) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Error'),
+              content: Text(data['error']),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Error'),
+            content: Text('Failed to fetch results. Please try again later.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text('An error occurred. Please try again later.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    _getResults();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Student Result'),
+        title: Text('View Result'),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              alignment: Alignment.center,
-              color: Colors.purple,
-              padding: EdgeInsets.all(8.0),
-              child: Text(
-                'Name: ${widget.name}\nStudent ID: ${widget.stid}',
-                style: TextStyle(color: Colors.white),
-              ),
+            Text(
+              'Name: ${widget.studentName}\nStudent ID: ${widget.studentId}',
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                DropdownButton<String>(
-                  value: semester,
-                  onChanged: (value) {
-                    setState(() {
-                      semester = value!;
-                    });
-                  },
-                  items: ['1st', '2nd', '3rd']
-                      .map((e) => DropdownMenuItem<String>(
-                    value: e,
-                    child: Text('$e semester'),
-                  ))
-                      .toList(),
-                ),
-                SizedBox(width: 16.0),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Fetch results for selected semester
-                      _fetchResults(semester);
-                    },
-                    child: Text('View Result'),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to view cgpa & completed course page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CgpaDisplayPage(studentId: '', studentName: '',
-                    ),
-                  ),
+            SizedBox(height: 20.0),
+            Text('Select Semester:'),
+            DropdownButton<String>(
+              value: _selectedSemester,
+              onChanged: (newValue) {
+                setState(() {
+                  _selectedSemester = newValue!;
+                });
+              },
+              items: <String>[
+                '1st',
+                '2nd',
+                '3rd',
+              ].map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
                 );
-              },
-              child: Text('View CGPA & Completed Course'),
+              }).toList(),
             ),
-            SizedBox(height: 16.0),
-            results.isNotEmpty
-                ? Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  '$semester Semester Result',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    backgroundColor: Colors.teal,
-                    fontSize: 16.0,
-                  ),
-                ),
-                SizedBox(height: 8.0),
-                DataTable(
-                  columns: [
-                    DataColumn(label: Text('Subject')),
-                    DataColumn(label: Text('Marks')),
-                    DataColumn(label: Text('Grade')),
-                    DataColumn(label: Text('Credit hr.')),
-                    DataColumn(label: Text('Status')),
-                  ],
-                  rows: results.map<DataRow>((result) {
-                    return DataRow(cells: [
-                      DataCell(Text(result['sub'])),
-                      DataCell(Text(result['marks'])),
-                      DataCell(Text(_calculateGrade(result['marks']))),
-                      DataCell(Text('${_creditHour(result['sub'])}')),
-                      DataCell(Text(_getStatus(result['marks']))),
-                    ]);
-                  }).toList(),
-                ),
-              ],
-            )
-                : SizedBox.shrink(),
-            SizedBox(height: 16.0),
+            SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () {
-                // Navigate back to profile page
-                Navigator.pop(context);
+                // Implement fetching results for the selected semester
+                _getResults();
               },
-              child: Text('Back to Profile'),
+              child: Text('View Result'),
             ),
+            SizedBox(height: 20.0),
+            if (_resultList.isNotEmpty)
+              DataTable(
+                columns: [
+                  DataColumn(label: Text('Subject')),
+                  DataColumn(label: Text('Marks')),
+                ],
+                rows: _resultList
+                    .map<DataRow>((result) => DataRow(
+                  cells: [
+                    DataCell(Text(result['subject'])),
+                    DataCell(Text(result['marks'].toString())),
+                  ],
+                ))
+                    .toList(),
+              ),
+            if (_resultList.isEmpty)
+              Text('No results found for the selected semester'),
           ],
         ),
       ),
     );
-  }
-
-  void _fetchResults(String semester) {
-    // Fetch results from API based on semester and widget.stid
-    // Example: results = fetchResultsFromAPI(widget.stid, semester);
-    // After fetching, update the state to rebuild the UI
-    setState(() {
-      results = [
-        {'sub': 'DBMS', 'marks': '85'},
-        {'sub': 'Mathematics', 'marks': '72'},
-        {'sub': 'Programming', 'marks': '63'},
-        {'sub': 'English', 'marks': '78'},
-        {'sub': 'Physics', 'marks': '91'},
-        {'sub': 'Chemistry', 'marks': '55'},
-        {'sub': 'Psychology', 'marks': '70'},
-      ];
-    });
-  }
-
-  String _calculateGrade(String marks) {
-    int mark = int.parse(marks);
-    if (mark < 60) return 'F';
-    if (mark < 70) return 'D';
-    if (mark < 80) return 'C';
-    if (mark < 90) return 'B';
-    return 'A';
-  }
-
-  int _creditHour(String subject) {
-    switch (subject) {
-      case 'DBMS':
-      case 'Programming':
-      case 'English':
-      case 'Physics':
-      case 'Chemistry':
-      case 'Psychology':
-        return 3;
-      case 'DBMS Lab':
-      case 'Programming Lab':
-        return 1;
-      case 'Mathematics':
-        return 4;
-      default:
-        return 0;
-    }
-  }
-
-  String _getStatus(String marks) {
-    int mark = int.parse(marks);
-    if (mark < 60) return 'Fail';
-    if (mark < 70) return 'Retake';
-    return 'Pass';
   }
 }

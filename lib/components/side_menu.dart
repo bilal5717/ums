@@ -11,9 +11,10 @@ import 'package:ums/student/charts.dart';
 import 'package:ums/Login/login.dart';
 
 class SideMenu extends StatelessWidget {
-  const SideMenu({
-    Key? key,
-  }) : super(key: key);
+  final String name;
+  final String sid;
+  const SideMenu({required this.name, required this.sid});
+
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +28,9 @@ class SideMenu extends StatelessWidget {
             icon: Icons.dashboard,
             title: "Dashboard",
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) {
+            /*  Navigator.push(context, MaterialPageRoute(builder: (_) {
                 return  MainScreen();
-              }));
+              }));*/
             },
           ),
           DrawerListTile(
@@ -37,7 +38,7 @@ class SideMenu extends StatelessWidget {
             title: "Results",
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (_) {
-                return  StudentResultPage(stid: '', name: '',);
+                return  ViewResultPage(studentId: sid, studentName: name,);
               }));
             },
           ),

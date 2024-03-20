@@ -44,7 +44,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
       String address = addressController.text;
 
       try {
-        String uri = 'http://192.168.1.5/ums_api/admin/single_student_update.php';
+        String uri = 'http://127.0.0.1/ums_api/admin/single_student_update.php';
         print(uri) ;
         var response = await http.post(Uri.parse(uri), body: {
           'st_id': widget.studentId.toString(),

@@ -1,6 +1,37 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-class MeetingHistoryPage extends StatelessWidget {
+class MeetingHistoryPage extends StatefulWidget {
+  @override
+  _MeetingHistoryPageState createState() => _MeetingHistoryPageState();
+}
+
+class _MeetingHistoryPageState extends State<MeetingHistoryPage> {
+  List<Meeting> meetings = [];
+
+  // Function to fetch meeting data from PHP script
+  Future<void> fetchMeetings() async {
+    final response = await http.get(Uri.parse('http://192.168.1.5/ums_api/teacher/meeting_history.php'));
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      List<Meeting> fetchedMeetings = data.map((meeting) => Meeting.fromJson(meeting)).toList();
+
+      setState(() {
+        meetings = fetchedMeetings;
+      });
+    } else {
+      throw Exception('Failed to load meetings');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMeetings();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,14 +53,14 @@ class MeetingHistoryPage extends StatelessWidget {
             SizedBox(height: 16.0),
             Expanded(
               child: ListView.builder(
-                itemCount: 5, // Update the itemCount with the actual count
+                itemCount: meetings.length,
                 itemBuilder: (context, index) {
-                  // Replace the static data with dynamic data from your database
+                  Meeting meeting = meetings[index];
                   return MeetingItem(
-                    title: 'Meeting $index',
-                    description: 'Description of meeting $index',
-                    startTime: 'Start time of meeting $index',
-                    endTime: 'End time of meeting $index',
+                    title: meeting.title,
+                    description: meeting.description,
+                    startTime: meeting.startDateTime,
+                    endTime: meeting.endDateTime,
                   );
                 },
               ),
@@ -77,6 +108,29 @@ class MeetingItem extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class Meeting {
+  final String title;
+  final String description;
+  final String startDateTime;
+  final String endDateTime;
+
+  Meeting({
+    required this.title,
+    required this.description,
+    required this.startDateTime,
+    required this.endDateTime,
+  });
+
+  factory Meeting.fromJson(Map<String, dynamic> json) {
+    return Meeting(
+      title: json['title'],
+      description: json['description'],
+      startDateTime: json['startDateTime'],
+      endDateTime: json['endDateTime'],
     );
   }
 }
