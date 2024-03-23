@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:ums/student/S_dashboard.dart';
 import 'package:ums/student/single_student_result.dart';
 import 'package:ums/student/change_password.dart';
 
 import 'package:ums/components/acadmic_calander.dart';
 import '../student/FeesSummary.dart';
 import 'package:ums/student/uploads.dart';
-import 'package:ums/student/history.dart';
+import 'package:ums/student/meetings.dart';
 import 'package:ums/student/charts.dart';
 import 'package:ums/Login/login.dart';
 
+import '../teacher/chatbot.dart';
+
 class SideMenu extends StatelessWidget {
-  final String name;
-  final String sid;
-  const SideMenu({required this.name, required this.sid});
+  final String email;
+  const SideMenu({required this.email});
 
 
   @override
@@ -38,7 +38,7 @@ class SideMenu extends StatelessWidget {
             title: "Results",
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (_) {
-                return  ViewResultPage(studentId: sid, studentName: name,);
+                return  ViewResultPage(email:email);
               }));
             },
           ),
@@ -64,9 +64,9 @@ class SideMenu extends StatelessWidget {
             icon: Icons.chat,
             title: "Message",
             onTap: () {
-            /*  Navigator.push(context, MaterialPageRoute(builder: (_) {
-                return  Calendar();
-              }));*/
+              Navigator.push(context, MaterialPageRoute(builder: (_) {
+                return  ChatScreen();
+              }));
             },
           ),
           DrawerListTile(
@@ -74,25 +74,25 @@ class SideMenu extends StatelessWidget {
             title: "Quiz And assignments markssheet",
             onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (_) {
-                return  MarksheetPage();
+                return  AssignmentFetcher();
               }));
             },
           ),
           DrawerListTile(
             icon: Icons.assignment,
-            title: "Assignments deadline",
+            title: "Join Meetings",
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (_) {
-                return  MeetingHistoryApp();
+                return  MeetingHistory();
               }));
             },
           ),
           DrawerListTile(
             icon: Icons.bar_chart,
-            title: "Charts",
+            title: "Class Progress",
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (_) {
-                return  Charts();
+                return  StudentPortalPage();
               }));
             },
           ),
@@ -101,7 +101,7 @@ class SideMenu extends StatelessWidget {
             title: "Change Password",
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (_) {
-                return  ChangePasswordPage();
+                return  ChangePasswordPage(email:email);
               }));
             },
           ),

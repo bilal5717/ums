@@ -4,8 +4,9 @@ import 'package:ums/teacher/meeting_history.dart';
 import 'package:ums/teacher/attendence.dart';
 import 'package:ums/teacher/uploadfiles.dart';
 import 'package:ums/teacher/files.dart';
-import 'package:ums/teacher/Charts.dart';
 import 'package:ums/teacher/finalGrade.dart';
+
+import '../chatbot.dart';
 class Sidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -103,12 +104,12 @@ class Sidebar extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.insert_chart, color: Colors.white),
               title: Text(
-                'Charts',
+                'Chatbot',
                 style: TextStyle(color: Colors.white),
               ),
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (_) {
-                  return UploadedChartsPage();
+                  return ChatScreen();
                 }));
               },
             ),

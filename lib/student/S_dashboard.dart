@@ -77,7 +77,7 @@ class _MainScreenState extends State<MainScreen> {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (_) {
-                  return StudentProfilePage(sid: studentId, sname: studentName);
+                  return StudentProfilePage(email: widget.email);
                 }));
               },
               child: const CircleAvatar(
@@ -87,7 +87,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
       ),
-      drawer: SideMenu(name: studentName, sid: studentId),
+      drawer: SideMenu(email: widget.email),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
@@ -95,9 +95,7 @@ class _MainScreenState extends State<MainScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 15),
-              const Text("My Courses", style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 20),
+
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: ConstrainedBox(
@@ -137,33 +135,23 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
               SizedBox(height: 50,),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 100,
-                    height: 100,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      alignment: Alignment.center,
-                      children: <Widget>[
-                        CircularProgressIndicator(
-                          value: cgpa / 4.0,
-                          strokeWidth: 10,
-                          backgroundColor: Colors.grey[300],
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        Center(
-                          child: Text(
-                            'CGPA\n$cgpa',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ],
-                    ),
+              SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Semester Progress',
+                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 20),
+                      // Loop through semester data and display progress
+                      for (var i = 0; i < semesterData.length; i++)
+                        SemesterProgressCard(semesterData[i]),
+                    ],
                   ),
-                ],
+                ),
               ),
               // Other widgets as needed...
             ],
@@ -175,3 +163,110 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
+
+class SemesterProgressCard extends StatelessWidget {
+  final Map<String, dynamic> semester;
+
+  SemesterProgressCard(this.semester);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(vertical: 10),
+      child: Card(
+        elevation: 4,
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Semester: ${semester['semester']}',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              // Display semester CGPA
+              Text(
+                'Semester CGPA: ${semester['cgpa']}',
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 10),
+              // Display subject-wise details
+              for (var subject in semester['subjects'])
+                SubjectDetailsCard(subject),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+class SubjectDetailsCard extends StatelessWidget {
+  final Map<String, dynamic> subject;
+
+  SubjectDetailsCard(this.subject);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Subject: ${subject['name']}',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 5),
+          Text(
+            'Attendance: ${subject['attendance']}%',
+            style: TextStyle(fontSize: 14),
+          ),
+          SizedBox(height: 5),
+          LinearProgressIndicator(
+            value: subject['attendance'] / 100,
+            backgroundColor: Colors.grey[300],
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+          ),
+          SizedBox(height: 5),
+          Text(
+            'GPA: ${subject['gpa']}',
+            style: TextStyle(fontSize: 14),
+          ),
+          SizedBox(height: 5),
+          // GPA Circular Progress Indicator
+          SizedBox(
+            width: 100,
+            height: 100,
+            child: CircularProgressIndicator(
+              value: subject['gpa'] / 4,
+              backgroundColor: Colors.grey[300],
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+            ),
+          ),
+          SizedBox(height: 10),
+        ],
+      ),
+    );
+  }
+}
+List<Map<String, dynamic>> semesterData = [
+  {
+    'semester': 'Semester 1',
+    'cgpa': 3.6,
+    'subjects': [
+      {'name': 'Subject 1', 'attendance': 80, 'gpa': 3.5},
+      {'name': 'Subject 2', 'attendance': 75, 'gpa': 4.0},
+    ],
+  },
+  {
+    'semester': 'Semester 2',
+    'cgpa': 3.8,
+    'subjects': [
+      {'name': 'Subject 3', 'attendance': 85, 'gpa': 3.7},
+      {'name': 'Subject 4', 'attendance': 70, 'gpa': 3.2},
+    ],
+  },
+  // Add more semester data as needed
+];

@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class UpdateProfilePage extends StatefulWidget {
   final String sid;
@@ -10,26 +12,11 @@ class UpdateProfilePage extends StatefulWidget {
 }
 
 class _UpdateProfilePageState extends State<UpdateProfilePage> {
-  late TextEditingController _nameController;
-  late TextEditingController _emailController;
-  late TextEditingController _deptController;
-  late TextEditingController _contactController;
-  late TextEditingController _genderController;
-  late TextEditingController _addressController;
-
-  @override
-  void initState() {
-    super.initState();
-    // Initialize controllers with empty values or fetch from API
-    _nameController = TextEditingController();
-    _emailController = TextEditingController();
-    _deptController = TextEditingController();
-    _contactController = TextEditingController();
-    _genderController = TextEditingController();
-    _addressController = TextEditingController();
-    // Fetch user data based on sid and populate the controllers
-    // Example: getUserData(widget.sid);
-  }
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _deptController = TextEditingController();
+  final TextEditingController _contactController = TextEditingController();
+  final TextEditingController _genderController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -48,16 +35,11 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
                 fontSize: 18,
                 backgroundColor: Colors.teal,
                 color: Colors.white,
-
               ),
             ),
             TextFormField(
               controller: _nameController,
               decoration: InputDecoration(labelText: 'Name'),
-            ),
-            TextFormField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
             ),
             TextFormField(
               controller: _deptController,
@@ -77,16 +59,12 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
             ),
             SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
-                // Perform validation and update profile logic here
-                _updateProfile();
-              },
+              onPressed: _updateProfile,
               child: Text('Update'),
             ),
             SizedBox(height: 16),
             TextButton(
               onPressed: () {
-                // Navigate back to profile page
                 Navigator.pop(context);
               },
               child: Text('Back to Profile'),
@@ -97,36 +75,50 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
     );
   }
 
-  void _updateProfile() {
-    // Retrieve values from controllers and perform update logic
-   /* String name = _nameController.text;
-    String email = _emailController.text;
+  void _updateProfile() async {
+    String name = _nameController.text;
     String dept = _deptController.text;
     String contact = _contactController.text;
     String gender = _genderController.text;
-    String address = _addressController.text;*/
+    String address = _addressController.text;
 
-    // Call API to update profile with retrieved values
-    // Example: updateProfile(widget.sid, name, email, dept, contact, gender, address);
+    var data = {
+      'sid': widget.sid,
+      'name': name,
+      'program': dept,
+      'contact': contact,
+      'gender': gender,
+      'address': address,
+    };
 
-    // After successful update, you might want to show a confirmation message
-    // and navigate back to the profile page.
-    _showUpdateConfirmation();
+    var response = await http.post(
+      Uri.parse('http://127.0.0.1/ums_api/student/update_profile.php'),
+      body: data,
+    );
+
+    if (response.statusCode == 200) {
+      var responseData = json.decode(response.body);
+      if (responseData['success']) {
+        _showDialog('Success', 'Profile updated successfully');
+      } else {
+        _showDialog('Error', responseData['message']);
+      }
+    } else {
+      _showDialog('Error', 'Failed to update profile');
+    }
   }
 
-  void _showUpdateConfirmation() {
+  void _showDialog(String title, String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Profile Updated'),
-          content: Text('Your profile has been successfully updated.'),
+          title: Text(title),
+          content: Text(message),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                // Navigate back to profile page
-                Navigator.pop(context);
               },
               child: Text('OK'),
             ),
@@ -134,17 +126,5 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
         );
       },
     );
-  }
-
-  @override
-  void dispose() {
-    // Clean up controllers
-    _nameController.dispose();
-    _emailController.dispose();
-    _deptController.dispose();
-    _contactController.dispose();
-    _genderController.dispose();
-    _addressController.dispose();
-    super.dispose();
   }
 }

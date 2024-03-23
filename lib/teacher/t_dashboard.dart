@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:ums/teacher/schedule/sidebar.dart';
 import 'package:ums/teacher/teacher_profile.dart';
-import 'change_password.dart';
+import 'package:ums/student/change_password.dart';
 import 'package:ums/Login/login.dart';
 // Updated Course class to include attendance percentage
 
 
-class T_dashboard extends StatelessWidget {
+class Tdashboard extends StatefulWidget {
+  final String email ;
 
+  const Tdashboard({required this.email});
   @override
-  T_dashboard();
+  State<Tdashboard> createState() => _T_dashboardState();
+}
+
+class _T_dashboardState extends State<Tdashboard> {
+  @override
+
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    const tableMinWidth = 800.0; // Adjust based on your content needs
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -27,7 +32,7 @@ class T_dashboard extends StatelessWidget {
                   title: Text('Profile'),
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) {
-                      return ProfilePage();
+                      return ProfilePage(email: '',);
                     }));
                   },
                 ),
@@ -38,7 +43,7 @@ class T_dashboard extends StatelessWidget {
                   title: Text('Password'),
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) {
-                      return ChangePasswordPage();
+                      return ChangePasswordPage(email: widget.email,);
                     }));
                   },
                 ),

@@ -29,6 +29,11 @@
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>Requesting permission to save files.</string>
+    <key>NSDocumentsFolderUsageDescription</key>
+    <string>Requesting permission to access documents folder.</string>
+
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ums/Admin/admin_dashboard.dart';
 import 'package:ums/student/S_dashboard.dart';
-import 'package:ums/teacher/T_dashboard.dart';
+
+import '../teacher/t_dashboard.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -38,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => AdminZone(email: email,)));
                 break;
               case UserRole.teacher:
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => T_dashboard()));
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Tdashboard(email:email)));
                 break;
             }
           } else {

@@ -1,24 +1,11 @@
 import 'package:flutter/material.dart';
 
-class Charts extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Student Portal',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: StudentPortalPage(),
-    );
-  }
-}
-
 class StudentPortalPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Class Progress'),
+        title: Text('Semester Progress'),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -27,13 +14,13 @@ class StudentPortalPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Class Progress',
+                'Semester Progress',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 20),
-              // Loop through graph data and display each pie chart
-              for (var i = 0; i < graphData.length; i++)
-                PieChartCard(graphData[i]['courseName'], graphData[i]['title'], graphData[i]['avgPercentage'], i),
+              // Loop through semester data and display progress
+              for (var i = 0; i < semesterData.length; i++)
+                SemesterProgressCard(semesterData[i]),
             ],
           ),
         ),
@@ -42,13 +29,10 @@ class StudentPortalPage extends StatelessWidget {
   }
 }
 
-class PieChartCard extends StatelessWidget {
-  final String courseName;
-  final String title;
-  final double avgPercentage;
-  final int index;
+class SemesterProgressCard extends StatelessWidget {
+  final Map<String, dynamic> semester;
 
-  PieChartCard(this.courseName, this.title, this.avgPercentage, this.index);
+  SemesterProgressCard(this.semester);
 
   @override
   Widget build(BuildContext context) {
@@ -63,34 +47,19 @@ class PieChartCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                courseName,
+                'Semester: ${semester['semester']}',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
-              SizedBox(
-                width: double.infinity,
-                height: 200,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    CircularProgressIndicator(
-                      value: avgPercentage / 100,
-                      backgroundColor: Colors.grey[300],
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                    ),
-                    Text(
-                      '${avgPercentage.toStringAsFixed(2)}%',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
+              // Display semester CGPA
+              Text(
+                'Semester CGPA: ${semester['cgpa']}',
+                style: TextStyle(fontSize: 16),
               ),
               SizedBox(height: 10),
-              Text(
-                title,
-                style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
-                textAlign: TextAlign.center,
-              ),
+              // Display subject-wise details
+              for (var subject in semester['subjects'])
+                SubjectDetailsCard(subject),
             ],
           ),
         ),
@@ -99,17 +68,73 @@ class PieChartCard extends StatelessWidget {
   }
 }
 
-// Sample data for graph
-List<Map<String, dynamic>> graphData = [
+class SubjectDetailsCard extends StatelessWidget {
+  final Map<String, dynamic> subject;
+
+  SubjectDetailsCard(this.subject);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Subject: ${subject['name']}',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 5),
+          Text(
+            'Attendance: ${subject['attendance']}%',
+            style: TextStyle(fontSize: 14),
+          ),
+          SizedBox(height: 5),
+          LinearProgressIndicator(
+            value: subject['attendance'] / 100,
+            backgroundColor: Colors.grey[300],
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+          ),
+          SizedBox(height: 5),
+          Text(
+            'GPA: ${subject['gpa']}',
+            style: TextStyle(fontSize: 14),
+          ),
+          SizedBox(height: 5),
+          // GPA Circular Progress Indicator
+          SizedBox(
+            width: 100,
+            height: 100,
+            child: CircularProgressIndicator(
+              value: subject['gpa'] / 4,
+              backgroundColor: Colors.grey[300],
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+            ),
+          ),
+          SizedBox(height: 10),
+        ],
+      ),
+    );
+  }
+}
+
+// Sample data for semester progress
+List<Map<String, dynamic>> semesterData = [
   {
-    'courseName': 'Course 1',
-    'title': 'Graph 1',
-    'avgPercentage': 75.0,
+    'semester': 'Semester 1',
+    'cgpa': 3.6,
+    'subjects': [
+      {'name': 'Subject 1', 'attendance': 80, 'gpa': 3.5},
+      {'name': 'Subject 2', 'attendance': 75, 'gpa': 4.0},
+    ],
   },
   {
-    'courseName': 'Course 2',
-    'title': 'Graph 2',
-    'avgPercentage': 90.0,
+    'semester': 'Semester 2',
+    'cgpa': 3.8,
+    'subjects': [
+      {'name': 'Subject 3', 'attendance': 85, 'gpa': 3.7},
+      {'name': 'Subject 4', 'attendance': 70, 'gpa': 3.2},
+    ],
   },
-  // Add more graph data as needed
+  // Add more semester data as needed
 ];

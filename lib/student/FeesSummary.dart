@@ -19,9 +19,7 @@ class FeePage extends StatelessWidget{
           child: AppBar(
             leading: InkWell(
               onTap: () {
-              /*  Navigator.push(context, MaterialPageRoute(builder: (_) {
-                  return MainScreen();
-                }));*/
+              Navigator.pop(context);
               },
               child: Icon(Icons.arrow_back, size: 30,),
             ),

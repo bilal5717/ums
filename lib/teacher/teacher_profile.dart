@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatefulWidget {
+  final String email;
+  ProfilePage({required this.email});
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }

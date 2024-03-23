@@ -3,7 +3,7 @@ import 'package:ums/Admin/s_update.dart';
 import 'package:ums/Admin/t_register.dart';
 import 'package:ums/Login/login.dart';
 
-import 'change_password_admin.dart';
+import 'package:ums/student/change_password.dart';
 
 class AdminZone extends StatefulWidget {
   final String email ;
@@ -42,7 +42,7 @@ class _AdminZoneState extends State<AdminZone> {
                     title: Text('Password'),
                     onTap: () {
                       Navigator.push(context, MaterialPageRoute(builder: (_) {
-                        return ChangePasswordAdmin(email:widget.email);
+                        return ChangePasswordPage(email:widget.email);
                       }));
                     },
                   ),

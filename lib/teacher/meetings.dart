@@ -33,7 +33,7 @@ class _MeetingFormState extends State<MeetingForm> {
   }
 
   Future<void> _submitForm() async {
-    final url = "http://192.168.1.5/ums_api/teacher/held_meetings.php"; // Replace with your PHP script URL
+    final url = "http://127.0.0.1/ums_api/teacher/held_meetings.php"; // Replace with your PHP script URL
 
     final response = await http.post(
       Uri.parse(url),

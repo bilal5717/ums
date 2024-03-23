@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
-class MeetingHistoryPage extends StatefulWidget {
+class MeetingHistory extends StatefulWidget {
   @override
   _MeetingHistoryPageState createState() => _MeetingHistoryPageState();
 }
 
-class _MeetingHistoryPageState extends State<MeetingHistoryPage> {
+class _MeetingHistoryPageState extends State<MeetingHistory> {
   List<Meeting> meetings = [];
 
   // Function to fetch meeting data from PHP script
@@ -36,7 +37,7 @@ class _MeetingHistoryPageState extends State<MeetingHistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Meeting History'),
+        title: Text('Join Meetings'),
       ),
       body: Container(
         padding: EdgeInsets.all(16.0),
@@ -44,7 +45,7 @@ class _MeetingHistoryPageState extends State<MeetingHistoryPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Meeting History',
+              'Meetings',
               style: TextStyle(
                 fontSize: 20.0,
                 fontWeight: FontWeight.bold,
@@ -61,6 +62,7 @@ class _MeetingHistoryPageState extends State<MeetingHistoryPage> {
                     description: meeting.description,
                     startTime: meeting.startDateTime,
                     endTime: meeting.endDateTime,
+                    link: meeting.link,
                   );
                 },
               ),
@@ -77,6 +79,7 @@ class MeetingItem extends StatelessWidget {
   final String description;
   final String startTime;
   final String endTime;
+  final String? link;
 
   const MeetingItem({
     Key? key,
@@ -84,6 +87,7 @@ class MeetingItem extends StatelessWidget {
     required this.description,
     required this.startTime,
     required this.endTime,
+    this.link,
   }) : super(key: key);
 
   @override
@@ -105,6 +109,14 @@ class MeetingItem extends StatelessWidget {
             Text('Starting time: $startTime'),
             SizedBox(height: 8.0),
             Text('Ended by: $endTime'),
+            SizedBox(height: 8.0),
+            if (link != null)
+              ElevatedButton(
+                onPressed: () {
+                  _launchUrl(link!);
+                },
+                child: Text('Join Meeting'),
+              ),
           ],
         ),
       ),
@@ -117,12 +129,14 @@ class Meeting {
   final String description;
   final String startDateTime;
   final String endDateTime;
+  final String? link;
 
   Meeting({
     required this.title,
     required this.description,
     required this.startDateTime,
     required this.endDateTime,
+    this.link,
   });
 
   factory Meeting.fromJson(Map<String, dynamic> json) {
@@ -131,6 +145,15 @@ class Meeting {
       description: json['description'],
       startDateTime: json['startDateTime'],
       endDateTime: json['endDateTime'],
+      link: json['link'],
     );
   }
 }
+Future<void> _launchUrl(String link) async {
+  Uri uri = Uri.parse(link);
+  if (!await canLaunchUrl(uri)) {
+    throw Exception('Could not launch $link');
+  }
+  await launchUrl(uri);
+}
+
